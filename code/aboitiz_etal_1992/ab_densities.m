@@ -26,20 +26,27 @@ function vars = ab_data(validate_data)
     yticks = get_groups(data_pix(:,end-2));
     xticks = get_groups(data_pix(end, :))-1;
 
+    % Pre-plot image
+    if visualize_data
+        figure; imshow(data_pix); hold on;
+        plot(xticks,(size(data_pix,1)-1)*ones(size(xticks)),'*g');
+        plot(size(data_pix,2)-1, yticks, '*g');
+    end;
+    
     dens_pix = zeros(size(xticks));
     for xi = 1:length(xticks)
         xsliver = data_pix(:,max(1,floor(xticks(xi)-3)):min(size(data_pix,2),floor(xticks(xi)+3)));
         xsum    = sum(xsliver,2);
         gg = get_groups(xsum==max(xsum));
-        plot(xticks(xi), gg, 'y*');
+        if visualize_data
+            plot(xticks(xi), gg, 'y*');
+        end;
         if length(gg)~=3, error('?');end;
         dens_pix(xi) = gg(2); % we subtracted off 4 pixels above
     end;
 
+    % Post-plot results
     if visualize_data
-        figure; imshow(data_pix); hold on;
-        plot(xticks,(size(data_pix,1)-1)*ones(size(xticks)),'*g');
-        plot(size(data_pix,2)-1, yticks, '*g');
         plot(xticks, dens_pix, 'r*')
     end;
 
@@ -47,7 +54,7 @@ function vars = ab_data(validate_data)
     ab_fig1_g04_dens_vals = (3 + 0.5*(yticks(end)-dens_pix)/mean(diff(yticks)))*1E5;
     ab_fig1_cc_regions = {'G1' 'G2' 'G3' 'B1' 'B2' 'B3' 'I' 'S1' 'S2' 'S3'};
 
-    if visualize_data
+    if validate_data
         % Plot old vs. new values
         figure; set(gcf,'Position',[104         516        1093         158]);
         subplot(1,2,1);
@@ -78,24 +85,28 @@ function vars = ab_data(validate_data)
         figure; imshow(data_pix); hold on;
         plot(xticks,(size(data_pix,1)-1)*ones(size(xticks)),'*g');
         plot(size(data_pix,2)-1, yticks, '*g');
-
-        dens_pix = zeros(size(xticks));
-        for xi = 1:length(xticks)
-            xsliver = data_pix(:, max(1,floor(xticks(xi)-3)):min(size(data_pix,2),floor(xticks(xi)+3)));
-            xsum    = sum(xsliver,2);
-            [gg,ggs] = get_groups(xsum==max(xsum));
+    end;
+    
+    dens_pix = zeros(size(xticks));
+    for xi = 1:length(xticks)
+        xsliver = data_pix(:, max(1,floor(xticks(xi)-3)):min(size(data_pix,2),floor(xticks(xi)+3)));
+        xsum    = sum(xsliver,2);
+        [gg,ggs] = get_groups(xsum==max(xsum));
+        if visualize_data
             plot(xticks(xi), gg, 'y*');
-            if length(gg)~=3, xi, gg, error('?'); end;
-            dens_pix(xi) = gg(2); % we subtracted off 4 pixels above
         end;
+        if length(gg)~=3, xi, gg, error('?'); end;
+        dens_pix(xi) = gg(2); % we subtracted off 4 pixels above
+    end;
+    if visualize_data
         plot(xticks, dens_pix, 'r*')
     end;
-
+    
     % Get final values
     ab_fig1_g1_dens_vals = (8 + 1*(yticks(end)-dens_pix)/mean(diff(yticks)))*1E4;
 
     % Plot old vs. new values
-    if visualize_data
+    if validate_data
         figure; set(gcf,'Position',[104         516        1093         158]);
         subplot(1,2,1);
         imshow(orig_img);
@@ -104,6 +115,7 @@ function vars = ab_data(validate_data)
         set(gca, 'xtick',1:length(ab_fig1_cc_regions), 'xticklabel', ab_fig1_cc_regions, 'xlim', [0.5
         length(ab_fig1_cc_regions)+0.5], 'ylim', 1E4*[7.5 9.5]);
     end;
+
 
 
     % Determined this through manual image editing interventions
