@@ -1,4 +1,4 @@
-function collect_all(datasets, force)
+function collect_all(datasets, force, validate_data, visualize_data)
 %
 % Collect all datasets
 
@@ -16,6 +16,8 @@ function collect_all(datasets, force)
         datasets = { datasets };
     end;
     if ~exist('force', 'var'), force = false; end;
+    if ~exist('validate_data', 'var'), validate_data = false; end;
+    if ~exist('visualize_data', 'var'), visualize_data = false; end;
 
 
     %% Loop over all directories and mat files to create datasets
@@ -29,8 +31,8 @@ function collect_all(datasets, force)
 
         % Find files for doing computations
         local_dir = fullfile(script_dir, dataset);
-        if ~exist(dataset)
-            fprintf('WARNING: files for creating requested dataset do not exist: %s', dataset);
+        if ~exist(local_dir, 'file')
+            fprintf('WARNING: files for creating requested dataset do not exist: %s, %s\n', dataset, local_dir);
             continue;
         end;
 
@@ -48,7 +50,7 @@ function collect_all(datasets, force)
             %  if it's there, nothing left to do.
             data_mfile = data_mfiles(fi);
             [~, cwd_name] = fileparts(script_dir);
-            mat_dirpath = strrep(script_dir, cwd_name, 'data');
+            mat_dirpath = strrep(script_dir, cwd_name, 'matfiles');
             mat_filepath = fullfile(mat_dirpath, sprintf('%s.mat', dataset));
             if exist(mat_filepath, 'file') && ~force
                 fprintf('Found existing mat file for %s in %s\n', fullfile(dataset, data_mfile.name), mat_filepath);
@@ -60,9 +62,11 @@ function collect_all(datasets, force)
             %try
                 % Run the data collection; output is a struct
                 fprintf('Running "%s" ... ', fullfile(dataset, data_mfile.name));
-                vars = eval(sprintf('%s(false);', data_mfile.name(1:end-2))); % run as a matlab script
-                close all;  % in case any plots were generated
-
+                vars = eval(sprintf('%s(validate_data, visualize_data);', data_mfile.name(1:end-2))); % run as a matlab script
+                if ~visualize_data
+                    close all;  % in case any plots were generated
+                end;
+                
                 % Save the variables by decomposing the struct,
                 %   assigning the vars locally, saving,
                 %   then cleaning up.

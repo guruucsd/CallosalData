@@ -1,4 +1,4 @@
-function vars = hh_2007_data(validate_data)
+function vars = hh_2007_data(validate_data, visualize_data)
 %
 
     if ~exist('validate_data', 'var'), validate_data = true; end;
@@ -33,7 +33,7 @@ function vars = hh_2007_data(validate_data)
     % Cerebellum
     hh_2007_tabS2_cerebellum_M = [0.326 0.730 1.196 1.732 4.30 4.60 7.694]';
     hh_2007_tabS2_cerebellum_Nn = 1E6*[185.28 361.37 743.50 1040 1820 2490 4550]';
-    hh_2007_tabS2_cerebellum_Dn = 1E3*[571.46 494.97 623.08 605.08 424.0 540.31 590.80]';
+    hh_2007_tabS2_cerebellum_Dn = 1E6*[571.46 494.97 623.08 605.08 424.0 540.31 590.80]';
     hh_2007_tabS2_cerebellum_No = 1E6*[19.98 49.49 65.96 145.27 133.02 245.81 931.03]';
     hh_2007_tabS2_cerebellum_Do = 1E3*[61.60 68.17 54.46 82.89 30.94 53.44 121.01]';
 
@@ -64,26 +64,26 @@ function vars = hh_2007_data(validate_data)
     %% Visualize data
     if visualize_data
         % M in table 1 and M across all structures in supplement
-        figure; allometric_regression(hh_2007_tab1_M, sum(hh_2007_tabS2_M,2), 'linear', 1, false, true);
+        allometric_regression(hh_2007_tab1_M, sum(hh_2007_tabS2_M,2), 'linear', 1, false, true);
         pct_diff_M = (sum(hh_2007_tabS2_M,2) - hh_2007_tab1_M)./(sum(hh_2007_tabS2_M,2)+hh_2007_tab1_M)/2*100;
         title(sprintf('Brain mass (max %4.1f%% diff)', max(abs(pct_diff_M))));
         xlabel('Table 1'); ylabel('\Sigma_{structures} Table S2');
 
         % Nn in table 1 and M across all structures in supplement
-        figure; allometric_regression(hh_2007_tab1_Nn, sum(hh_2007_tabS2_Nn,2), 'linear', 1, false, true);
+        allometric_regression(hh_2007_tab1_Nn, sum(hh_2007_tabS2_Nn,2), 'linear', 1, false, true);
         pct_diff_Nn = (sum(hh_2007_tabS2_Nn,2) - hh_2007_tab1_Nn)./(sum(hh_2007_tabS2_Nn,2)+hh_2007_tab1_Nn)/2*100;
         title(sprintf('# Neurons (max %4.1f%% diff)', max(abs(pct_diff_Nn))));
         xlabel('Table 1'); ylabel('\Sigma_{structures} Table S2');
 
         % No in table 1 and M across all structures in supplement
-        figure; allometric_regression(hh_2007_tab1_No, sum(hh_2007_tabS2_No,2), 'linear', 1, false, true);
+        allometric_regression(hh_2007_tab1_No, sum(hh_2007_tabS2_No,2), 'linear', 1, false, true);
         pct_diff_No = (sum(hh_2007_tabS2_No,2) - hh_2007_tab1_No)./(sum(hh_2007_tabS2_No,2)+hh_2007_tab1_No)/2*100;
         title(sprintf('# Non-neurons (max %4.1f%% diff)', max(abs(pct_diff_No))));
         xlabel('Table 1'); ylabel('\Sigma_{structures} Table S2');
 
 
         %% Validate data, within table
-        figure; allometric_regression(hh_2007_tabS2_cortex_Dn.*hh_2007_tabS2_cortex_M*1000, hh_2007_tabS2_cortex_Nn, 'linear', 1, false, true); %Dn vs D neocortical
+        allometric_regression(hh_2007_tabS2_cortex_Dn.*hh_2007_tabS2_cortex_M*1000, hh_2007_tabS2_cortex_Nn, 'linear', 1, false, true); %Dn vs D neocortical
         pct_diff_Nn_calc = (hh_2007_tabS2_cortex_Dn.*hh_2007_tabS2_cortex_M*1000 - hh_2007_tabS2_cortex_Nn)./(hh_2007_tabS2_cortex_Dn.*hh_2007_tabS2_cortex_M*1000+hh_2007_tabS2_cortex_Nn)/2*100;
         title(sprintf('# Neurons, 2 ways, in Table S2 (max %4.1f%% diff)', max(abs(pct_diff_Nn_calc))));
         xlabel('[Density neurons*Structure Mass]'); ylabel('# neurons');
