@@ -33,7 +33,7 @@ function vars = ab_data(validate_data, visualize_data)
 
 
     % get histogram data, and load variables into the current workspace.
-    for fil={'histograms', 'densities'}
+    for fil={'densities', 'histograms'}
         eval(sprintf('vars = ab_%s(validate_data);', fil{1}));
         varnames = fieldnames(vars);
         varvals = struct2cell(vars);
