@@ -231,13 +231,8 @@ function vars = ab_data(validate_data)
     % Determined this through manual image editing interventions
     ab_fig1_cc_areas = [27554 12007 12106 7952 7806 9128 8969 10858 15946 13889];
     ab_fig1_cc_rel_areas = ab_fig1_cc_areas./sum(ab_fig1_cc_areas);
-
-
-    %% Validate data
-    if validate_data
-    end;
-
-
+    
+    
     %% Construct outputs
     varnames = who('ab_*');
     varvals = cellfun(@eval, varnames, 'UniformOutput', false);
