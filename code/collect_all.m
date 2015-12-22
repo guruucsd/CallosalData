@@ -49,8 +49,7 @@ function collect_all(datasets, force, validate_data, visualize_data)
             % MAT file is put in the 'data' directory;
             %  if it's there, nothing left to do.
             data_mfile = data_mfiles(fi);
-            [~, cwd_name] = fileparts(script_dir);
-            mat_dirpath = strrep(script_dir, cwd_name, 'matfiles');
+            mat_dirpath = fullfile(fileparts(script_dir), 'matfiles');
             mat_filepath = fullfile(mat_dirpath, sprintf('%s.mat', dataset));
             if exist(mat_filepath, 'file') && ~force
                 fprintf('Found existing mat file for %s in %s\n', fullfile(dataset, data_mfile.name), mat_filepath);
@@ -66,7 +65,7 @@ function collect_all(datasets, force, validate_data, visualize_data)
                 if ~visualize_data
                     close all;  % in case any plots were generated
                 end;
-                
+
                 % Save the variables by decomposing the struct,
                 %   assigning the vars locally, saving,
                 %   then cleaning up.
